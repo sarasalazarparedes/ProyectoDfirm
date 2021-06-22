@@ -5,7 +5,7 @@ import 'package:image/image.dart' as I;
 Future<Uint8List> processImage(Uint8List image) async {
   Uint8List result;
   // procesos con open cv
-  //capa con gaussian blur
+
   final blur = await ImgProc.gaussianBlur(image, [45, 45], 0);
   //result = blur;
 
@@ -13,7 +13,7 @@ Future<Uint8List> processImage(Uint8List image) async {
   final threshold = await ImgProc.adaptiveThreshold(blur, 255,
       ImgProc.adaptiveThreshGaussianC, ImgProc.threshBinaryInv, 55, 4);
 
-  //erode
+
   final erode = await ImgProc.erode(threshold, [1, 1]);
 
   //color

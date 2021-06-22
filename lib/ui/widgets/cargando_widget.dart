@@ -1,7 +1,7 @@
 import 'dart:math';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:proyecto_fdirm/controladores/loading_controller.dart';
+import 'package:fdirm/controladores/loading_controller.dart';
 class LoadingWidget extends StatefulWidget {
   @override
   _LoadingWidgetState createState() => _LoadingWidgetState();
@@ -33,7 +33,7 @@ class _LoadingWidgetState extends State<LoadingWidget> with SingleTickerProvider
       color: Color(0x00000000),
       child: Center(
         child: Container(
-        padding: EdgeInsets.symmetric(vertical: 32),
+          padding: EdgeInsets.symmetric(vertical: 32),
           height: 300,
           width: 300,
           decoration: BoxDecoration(
@@ -45,23 +45,23 @@ class _LoadingWidgetState extends State<LoadingWidget> with SingleTickerProvider
             children: <Widget>[
               Expanded(
                 child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children:<Widget> [
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children:<Widget> [
 
-                  SizedBox(height: 25,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Point(height: 3*(sin(1.6*_animation.value))),
-                        Point(height: 3*(sin(2.1*_animation.value))),
-                        Point(height: 3*(sin(2.4*_animation.value))),
-                      ],
+                    SizedBox(height: 25,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Point(height: 3*(sin(1.6*_animation.value))),
+                          Point(height: 3*(sin(2.1*_animation.value))),
+                          Point(height: 3*(sin(2.4*_animation.value))),
+                        ],
+                      ),
                     ),
-                  ),
-                  Text("Cargando",style: TextStyle(color: CupertinoColors.white,fontSize: 20),
-                  ),
-                ],
-              ),),
+                    Text("Cargando",style: TextStyle(color: CupertinoColors.white,fontSize: 20),
+                    ),
+                  ],
+                ),),
 
               ValueListenableBuilder(valueListenable: LoadingController.instance.text,
                   builder: (context,value,child){
@@ -91,8 +91,8 @@ class Point extends StatelessWidget {
       height: height+8,
       width: height+8,
       decoration: BoxDecoration(
-        color: CupertinoTheme.of(context).primaryColor,
-        borderRadius: BorderRadius.circular(10)
+          color: CupertinoTheme.of(context).primaryColor,
+          borderRadius: BorderRadius.circular(10)
       ),
     );
   }

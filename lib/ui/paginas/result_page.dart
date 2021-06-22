@@ -3,11 +3,13 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:fdirm/controladores/camera_controller.dart';
+import 'package:fdirm/controladores/loading_controller.dart';
+import 'package:fdirm/service/process_image_service.dart';
+import 'package:fdirm/ui/widgets/cargando_widget.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:proyecto_fdirm/controladores/loading_controller.dart';
-import 'package:proyecto_fdirm/service/process_image_service.dart';
-import 'package:proyecto_fdirm/service/web_services.dart';
-import 'package:proyecto_fdirm/ui/widgets/cargando_widget.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share/share.dart';
 class ResultPage extends StatelessWidget {
   LoadingController _controller=LoadingController.instance;
 
@@ -23,6 +25,7 @@ class ResultPage extends StatelessWidget {
             middle: Text("Resultado"),
             leading: GestureDetector(
               onTap: (){
+                CameraControllerState.instance.activeCamera();
                 Navigator.pop(context);
               },
               child: Icon(CupertinoIcons.back),
@@ -36,10 +39,10 @@ class ResultPage extends StatelessWidget {
           ),
         ),
         ValueListenableBuilder(
-            valueListenable: _controller.isloading,
-            builder: (context,value,child){
-              return value? LoadingWidget():Container();
-            },
+          valueListenable: _controller.isloading,
+          builder: (context,value,child){
+            return value? LoadingWidget():Container();
+          },
         ),
       ],
     );
@@ -56,18 +59,14 @@ class _Body extends StatefulWidget {
 
 class __BodyState extends State<_Body> {
   Uint8List resultado;
-
-  Widget imagenContainer(Uint8List image){
+  DateTime now;
+  Widget imagenContainer(Uint8List image) {
     return Container(
-      width: 300,
-      height: 300,
+      height: 300.0,
+      width: 300.0,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16.0),
-        image: DecorationImage(
-          fit: BoxFit.cover,
-          image:MemoryImage(image)
-        ),
-      ),
+          borderRadius: BorderRadius.circular(16.0),
+          image: DecorationImage(fit: BoxFit.cover, image: MemoryImage(image))),
     );
   }
 
@@ -80,15 +79,39 @@ class __BodyState extends State<_Body> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             CupertinoButton(
-                color: CupertinoTheme.of(context).primaryColor,
-                child: Text("Descargar",
-                  style: TextStyle(color: CupertinoColors.white),),
-                onPressed: (){}
+              color: CupertinoTheme.of(context).primaryColor,
+              child: Text("Descargar",
+                style: TextStyle(color: CupertinoColors.white),),
+              onPressed: () async{
+                final directory = await getExternalStorageDirectory();
+                print(directory.path);
+                File file = File("${directory.path}/${now.toString()}-firma.png");
+                await file.writeAsBytes(resultado);
+                showCupertinoDialog(context: context, builder: (context){
+                  return CupertinoAlertDialog(
+                    title: Text('Descarga Completa'),
+                    content: Text('Se descargo la imagen de forma satisfactoria'),
+                    actions: <Widget>[
+                      CupertinoDialogAction(
+                        child: Text('Aceptar'),
+                        onPressed: (){
+                          Navigator.pop(context);
+                        },
+                      )
+                    ],
+                  );
+                });
+              },
             ),
 
             CupertinoButton(
-                child: Text("Compartir"),
-                onPressed: (){}
+              child: Text("Compartir"),
+              onPressed: () async{
+                final directory = await getExternalStorageDirectory();
+                File file = File("${directory.path}/${now.toString()}-firma.png");
+                await file.writeAsBytes(resultado);
+                Share.shareFiles(["${directory.path}/${now.toString()}-firma.png"]);
+              },
             ),
 
           ],
@@ -118,38 +141,34 @@ class __BodyState extends State<_Body> {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: CupertinoButton(
-                  onPressed: ()async{
-                    LoadingController.instance.loading();
-                    LoadingController.instance.changeText("Procesando imagen");
-                     await  Future.delayed(Duration(seconds: 2),(){});
-                    setState(() {
-                      
+                onPressed: ()async{
+                  LoadingController.instance.loading();
+                  LoadingController.instance.changeText("Procesando imagen");
+                  await  Future.delayed(Duration(seconds: 2),(){});
+                  setState(() {
 
-                    });
-                    LoadingController.instance.close();
-                  },
-                  child: GestureDetector(
-                    onTap: ()async{
-                      LoadingController.instance.loading();
-                      /*Uint8List decode = await widget.image.readAsBytes();
+                  });
+                  LoadingController.instance.close();
+                },
+                child: GestureDetector(
+                  onTap: ()async{
+                    LoadingController.instance.loading();
+                    /*Uint8List decode = await widget.image.readAsBytes();
                       final imgb64 = base64Encode(decode);
                       String resultService = await convertPhoto(imgb64);
                       decode = base64Decode(resultService);*/
-                      Uint8List decode =
-                      await processImage(await widget.image.readAsBytes());
-                      LoadingController.instance.close();
-                      setState(() {
-                        resultado=decode;
-                      });
-                       },
-
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text("Aplicar Filtro"),
-                      ),
-                      
+                    Uint8List decode =
+                    await processImage(await widget.image.readAsBytes());
+                    LoadingController.instance.close();
+                    setState(() {
+                      resultado=decode;
+                    });
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text("Aplicar Filtro"),
                   ),
-
+                ),
               ),
             ),
             resultado==null ? Container():imageResultContainer(),

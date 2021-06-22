@@ -1,36 +1,24 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/services.dart';
-import 'package:proyecto_fdirm/ui/paginas/camera_page.dart';
-import 'package:proyecto_fdirm/ui/paginas/result_page.dart';
-import 'package:proyecto_fdirm/ui/widgets/cargando_widget.dart';
-import 'package:camera/camera.dart';
 
 
-List<CameraDescription> cameras;
-void main()async {
-  WidgetsFlutterBinding.ensureInitialized();
-  cameras=await availableCameras();
-  print(cameras.length);
+import 'package:fdirm/ui/components/login_screen.dart';
+import 'package:flutter/material.dart';
+
+void main() {
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      statusBarColor: Color(0x00000000)
-    ));
-    
-    
-    return CupertinoApp(
-      theme: CupertinoThemeData(
-        primaryColor: CupertinoColors.systemIndigo,
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-        title: 'DFirm',
-         home:CameraPage(cameras),
-        //home: ResultPage(),
-
+      home: LoginScreen(),
     );
   }
 }

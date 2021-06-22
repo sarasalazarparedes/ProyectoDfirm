@@ -2,7 +2,9 @@ import 'package:http/http.dart' as http;
 
 Future<String> convertPhoto(String imgb64) async {
   try {
+    print(imgb64);
     var response = await http.post(
+
         "https://firmas-sin-fondo.herokuapp.com/firma64",
         body: {'img': imgb64});
     return response.body;
